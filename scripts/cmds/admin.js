@@ -34,13 +34,13 @@ module.exports = {
 			listAdmin: "👑 | Danh sách admin:\n%1"
 		},
 		en: {
-			added: "✅ | Added admin role for %1 users:\n%2",
-			alreadyAdmin: "\n⚠️ | %1 users already have admin role:\n%2",
-			missingIdAdd: "⚠️ | Please enter ID or tag user to add admin role",
-			removed: "✅ | Removed admin role of %1 users:\n%2",
-			notAdmin: "⚠️ | %1 users don't have admin role:\n%2",
-			missingIdRemove: "⚠️ | Please enter ID or tag user to remove admin role",
-			listAdmin: "👑 | List of admins:\n%1"
+			added: "✅ | 𝐋𝐞 𝐧𝐨𝐮𝐯𝐞𝐚𝐮 𝐚𝐝𝐦𝐢𝐧 𝐝𝐮 𝐜𝐥𝐚𝐧 𝐞𝐬𝐭 %1 users:\n%2",
+			alreadyAdmin: "\n⚠️ | %1 𝐀𝐥𝐞𝐫𝐭𝐞 𝐯𝐨𝐮𝐬 𝐣𝐨𝐮𝐞 𝐝𝐞́𝐣𝐚̀ 𝐥𝐞 𝐫𝐨̂𝐥𝐞 𝐝𝐞 𝐥'𝐚𝐝𝐦𝐢𝐧:\n%2",
+			missingIdAdd: "⚠️ | 𝐃𝐞́𝐬𝐨𝐥𝐞́ 𝐞𝐧𝐭𝐫𝐞 𝐈𝐃 𝐨𝐮 𝐭𝐚𝐠𝐮𝐞 𝐥𝐚 𝐩𝐞𝐫𝐬𝐨𝐧𝐧𝐞 𝐪𝐮𝐞 𝐯𝐨𝐮𝐬 𝐬𝐨𝐮𝐡𝐚𝐢𝐭𝐞 𝐚𝐣𝐨𝐮𝐭𝐞 𝐚𝐮𝐱  𝐚𝐝𝐦𝐢𝐧𝐬",
+			removed: "✅ |𝐋'𝐚𝐝𝐦𝐢𝐧 𝐚𝐲𝐚𝐧𝐭 𝐞́𝐭𝐞́ 𝐫𝐞𝐭𝐢𝐫𝐞 𝐞𝐬𝐭  %1 users:\n%2",
+			notAdmin: "⚠️ |𝐚𝐥𝐞𝐫𝐭𝐞 𝐯𝐨𝐮𝐬 𝐞́𝐭𝐞́𝐬 𝐩𝐚𝐬 𝐚𝐝𝐦𝐢𝐧 𝐝𝐮 𝐛𝐨𝐭 %1 users:\n%2",
+			missingIdRemove: "⚠️ | 𝐃𝐞́𝐬𝐨𝐥𝐞́ 𝐞𝐧𝐭𝐫𝐞 𝐈𝐃 𝐨𝐮 𝐭𝐚𝐠𝐮𝐞 𝐥𝐚 𝐩𝐞𝐫𝐬𝐨𝐧𝐧𝐞 𝐪𝐮𝐞 𝐯𝐨𝐮𝐬 𝐬𝐨𝐮𝐡𝐚𝐢𝐭𝐞 𝐫𝐞𝐭𝐢𝐫𝐞 𝐝𝐞𝐬 𝐚𝐝𝐦𝐢𝐧𝐬 ",
+			listAdmin: "🔮 | 𝐋𝐈𝐒𝐓𝐄 𝐃'𝐀𝐃𝐌𝐈𝐍𝐒:\n✎﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏﹏
 		}
 	},
 
