@@ -1,76 +1,92 @@
-const axios = require('axios');
+ const axios = require('axios');
 
-async function fetchFromAI(url, params) {
-  try {
-    const response = await axios.get(url, { params });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+let PriyaPrefix = [
+  'bot',
+  'ai',
+  '.ai', // Add Your Prefix Here
+];
 
-async function getAIResponse(input, userName, userId, messageID) {
-  const services = [
-    { url: 'https://ai-chat-gpt-4-lite.onrender.com/api/hercai', params: { question: input } }
-  ];
-
-  let response = `⧠ 𝑺𝑎𝒍𝒖𝒕 ☞︎︎︎${userName}☜︎︎︎  𝒕𝒖 𝒗𝑒𝒖𝒙 𝒎𝑒 𝒑𝒐𝒔𝑒𝒓 𝒖𝒏𝑒 𝒒𝒖𝑒𝒔𝒕𝒊𝒐𝒏 ?\n⧠ 𝑺𝒊 𝒐𝒖𝒊 𝑐'𝑒𝒔𝒕 𝒗𝑎𝒔-𝒚 𝒑𝒐𝒔𝑒 𝒍à\n⧠ 𝑷𝒓𝑒𝒏𝑑𝒔 𝒕𝒐𝒏 𝒕𝑒𝒎𝒑𝒔\n⧠ 𝑱𝑒 𝒔𝒖𝒊𝒔 𝒍à 𝒑𝒐𝒖𝒓 𝒓é𝒑𝒐𝒏𝑑𝒓𝑒 à 𝒕𝒐𝒖𝒕𝑒𝒔 𝒕𝑒𝒔 𝒒𝒖𝑒𝒔𝒕𝒊𝒐𝒏𝒔`;
-  let currentIndex = 0;
-
-  for (let i = 0; i < services.length; i++) {
-    const service = services[currentIndex];
-    const data = await fetchFromAI(service.url, service.params);
-    if (data && (data.gpt4 || data.reply || data.response)) {
-      response = data.gpt4 || data.reply || data.response;
-      break;
-    }
-    currentIndex = (currentIndex + 1) % services.length; // Passer au service suivant
-  }
-
-  return { response, messageID };
-}
+const axiosInstance = axios.create();
 
 module.exports = {
   config: {
-    name: 'jokers',
-    author: 'Le vide',
+    name: 'ai',
+    version: '2.2.0',
     role: 0,
-    category: 'ai',
-    shortDescription: 'ai to ask anything',
+    category: 'AI',
+    author: 'Priyanshi || Priyansh',
+    shortDescription: 'Artificial Intelligence',
+    longDescription: 'Ask Anything To Ai For Your Answers',
   },
-  onStart: async function ({ api, event, args }) {
-    const input = args.join(' ').trim();
-    if (!input) {
-      api.sendMessage("⧠ 𝑺𝑎𝒍𝒖𝒕 ${userName}  𝒕𝒖 𝒗𝑒𝒖𝒙 𝒎𝑒 𝒑𝒐𝒔𝑒𝒓 𝒖𝒏𝑒 𝒒𝒖𝑒𝒔𝒕𝒊𝒐𝒏 ?", event.threadID, event.messageID);
+
+  onStart: async function () {},
+
+  onChat: async function ({ message, event, args, api, threadID, messageID }) {
+    const command = args[0].toLowerCase();
+
+    // Help Command
+    if (command === 'help') {
+      const helpMessage = `
+      🌟 *AI Commands* 🌟
+      - Prefixes: ${PriyaPrefix.join(', ')}
+      - Add Prefix: addprefix <prefix>
+      - AI Query: ${PriyaPrefix[0]} <your query>
+      - Say Hi: hi
+      `;
+      await message.reply(helpMessage);
       return;
     }
 
-    api.getUserInfo(event.senderID, async (err, ret) => {
-      if (err) {
-        console.error(err);
-        return;
+    // Add New Prefix Command
+    if (command === 'addprefix') {
+      const newPrefix = args[1];
+      if (newPrefix && !PriyaPrefix.includes(newPrefix)) {
+        PriyaPrefix.push(newPrefix);
+        await message.reply(`New prefix "${newPrefix}" added successfully!`);
+      } else {
+        await message.reply('Please provide a valid and unique prefix.');
       }
-      const userName = ret[event.senderID].name;
-      const { response, messageID } = await getAIResponse(input, userName, event.senderID, event.messageID);
-      api.sendMessage(`❮⧠❯━━━━━━━━━━❮◆❯\n❮◆❯━━━━━━━━━━❮⧠❯\n${response}\n\n╰┈┈┈➤⊹⊱✰✫✫✰⊰⊹`, event.threadID, messageID);
-    });
-  },
-  onChat: async function ({ api, event, message }) {
-    const messageContent = event.body.trim().toLowerCase();
-    if (messageContent.startsWith("ai")) {
-      const input = messageContent.replace(/^ai\s*/, "").trim();
-      api.getUserInfo(event.senderID, async (err, ret) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        const userName = ret[event.senderID].name;
-        const { response, messageID } = await getAIResponse(input, userName, event.senderID, message.messageID);
-        message.reply(`❮⧠❯━━━━━━━━━━❮◆❯\n❮◆❯━━━━━━━━━━❮⧠❯\n\n${response}\n\n❮⧠❯━━━━━━━━━━❮◆❯\n❮◆❯━━━━━━━━━━❮⧠❯`, messageID);
-api.setMessageReaction("💬", event.messageID, () => {}, true);
+      return;
+    }
 
-      });
+    // Check for prefixes in the message
+    const ahprefix = PriyaPrefix.find((p) => event.body && event.body.toLowerCase().startsWith(p));
+    if (!ahprefix) {
+      return;
+    }
+
+    const priya = event.body.substring(ahprefix.length).trim();
+    if (!priya) {
+      await message.reply('Enter a question 🥹?');
+      return;
+    }
+
+    const apply = [
+      '𝚎𝚗𝚝𝚎𝚛 (𝚚)*',
+      '𝙷𝚘𝚠 𝙲𝚊𝚗 𝙸 𝙷𝚎𝚕𝚙 𝚈𝚘𝚞?',
+      '𝚀𝚞𝚊𝚛𝚢 𝙿𝚕𝚎𝚊𝚜𝚎....',
+      '𝙷𝚘𝚠 𝙲𝚊𝚗 𝙸 𝙰𝚜𝚜𝚒𝚜𝚝 𝚈𝚘𝚞?',
+      '𝙶𝚛𝚎𝚎𝚝𝚒𝚗𝚐𝚜!',
+      '𝙸𝚜 𝚃𝚑𝚎𝚛𝚎 𝚊𝚗𝚢𝚝𝚑𝚒𝚗𝚐 𝙴𝚕𝚜𝚎 𝙸 𝙲𝚊𝚗 𝙳𝚘?'
+    ];
+    const randomapply = apply[Math.floor(Math.random() * apply.length)];
+
+    if (command === 'hi') {
+      await message.reply(randomapply);
+      return;
+    }
+
+    const encodedPrompt = encodeURIComponent(args.join(' '));
+
+    await message.reply('Please wait 🥹');
+
+    try {
+      const response = await axiosInstance.get(`https://priyansh-ai.onrender.com/gemini/ai?query=${encodedPrompt}`);
+      const Priya = response.data;
+      const priyares = `${Priya}`;
+      await message.reply(priyares);
+    } catch (error) {
+      await message.reply('Oops! Something went wrong. Please try again later.');
     }
   }
 };
