@@ -1,7 +1,7 @@
  const axios = require('axios');
 
 let PriyaPrefix = [
-  'bot',
+  'question',
   'ai',
   '.ai', // Add Your Prefix Here
 ];
