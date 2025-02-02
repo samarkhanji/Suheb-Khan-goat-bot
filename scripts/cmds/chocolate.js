@@ -17,7 +17,7 @@ async function onStart({ api, event }) {
   if (event.body.indexOf("Chocolate") == 0 || event.body.indexOf("chocolate") == 0 || event.body.indexOf("toffee") == 0 || event.body.indexOf("Toffee") == 0) {
     var msg = {
       body: "Ye lo chocolate ",
-      attachment: fs.createReadStream(__dirname + `/image/chocolate.jpg`)
+      attachment: fs.createReadStream(__dirname + `/assets/image/chocolate.jpg`)
     }
     api.sendMessage(msg, threadID, messageID);
     api.setMessageReaction("", event.messageID, (err) => { }, true)
