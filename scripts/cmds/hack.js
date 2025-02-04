@@ -50,7 +50,7 @@ module.exports = {
     var name = await api.getUserInfo(id);
     name = name[id].name;
     var ThreadInfo = await api.getThreadInfo(event.threadID);
-    var background = ["https://i.imgur.com/MXuJ2kx.jpeg"];
+    var background = ["https://i.imgur.com/q24tifo.jpeg"];
     var rd = background[Math.floor(Math.random() * background.length)];
     let getAvtmot = (
       await axios.get(
@@ -76,7 +76,7 @@ module.exports = {
     const lines = await this.wrapText(ctx, name, 1160);
     ctx.fillText(lines.join("\n"), 200, 497); //comment
     ctx.beginPath();
-    ctx.drawImage(baseAvt1, 83, 437, 100, 101);
+    ctx.drawImage(baseAvt1, 100, 437, 100, 101);
     const imageBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imageBuffer);
     fs.removeSync(pathAvt1);
