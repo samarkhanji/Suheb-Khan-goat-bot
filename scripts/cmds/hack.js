@@ -76,7 +76,7 @@ module.exports = {
     const lines = await this.wrapText(ctx, name, 1160);
     ctx.fillText(lines.join("\n"), 200, 497); //comment
     ctx.beginPath();
-    ctx.drawImage(baseAvt1, 83, 10, 50, 101);
+    ctx.drawImage(baseAvt1, 150, 10, 50, 101);
     const imageBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imageBuffer);
     fs.removeSync(pathAvt1);
