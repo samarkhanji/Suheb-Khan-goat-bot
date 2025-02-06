@@ -5,9 +5,9 @@ const axios = require("axios");
 module.exports = {
   config: {
     name: "hack",
-    author: "CFBD-BaYjid",
+    author: "Raj",
     countDown: 5,
-    role: 2,
+    role: 0,
     category: "fun",
     shortDescription: {
       en: "Generates a 'hacking' image with the user's profile picture.",
@@ -44,13 +44,13 @@ module.exports = {
   },
 
   onStart: async function ({ args, usersData, threadsData, api, event }) {
-    let pathImg = __dirname + "/cache/background.png";
-    let pathAvt1 = __dirname + "/cache/Avtmot.png";
+    let pathImg = __dirname + "/tmp/background.png";
+    let pathAvt1 = __dirname + "/tmp/Avtmot.png";
     var id = Object.keys(event.mentions)[0] || event.senderID;
     var name = await api.getUserInfo(id);
     name = name[id].name;
     var ThreadInfo = await api.getThreadInfo(event.threadID);
-    var background = ["https://i.imgur.com/VQXViKI.png"];
+    var background = ["https://i.imgur.com/q24tifo.jpeg"];
     var rd = background[Math.floor(Math.random() * background.length)];
     let getAvtmot = (
       await axios.get(
@@ -70,13 +70,13 @@ module.exports = {
     let canvas = createCanvas(baseImage.width, baseImage.height);
     let ctx = canvas.getContext("2d");
     ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-    ctx.font = "400 23px Arial";
+    ctx.font = "400 10px Arial";
     ctx.fillStyle = "#1878F3";
     ctx.textAlign = "start";
     const lines = await this.wrapText(ctx, name, 1160);
     ctx.fillText(lines.join("\n"), 200, 497); //comment
     ctx.beginPath();
-    ctx.drawImage(baseAvt1, 83, 437, 100, 101);
+    ctx.drawImage(baseAvt1, 150, 10, 50, 101);
     const imageBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imageBuffer);
     fs.removeSync(pathAvt1);
