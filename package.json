@@ -35,7 +35,7 @@
 		"mqtt": "^4.3.7",
 		"node-cron": "^3.0.2",
 		"nodemailer": "^6.7.5",
-		"npmlog": "^7.0.1",
+		"npmlog": "^7.0.1", "nayan-videos-downloader": "^0.1.0",
 		"ora": "^5.4.1",
 		"passport": "^0.6.0",
 		"passport-local": "^1.0.0",
