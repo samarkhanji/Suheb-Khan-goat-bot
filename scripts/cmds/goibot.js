@@ -19,6 +19,7 @@ config: {
   onChat: async function ({ api, event, args, Threads, userData }) {
 
   var { threadID, messageID, senderID } = event;
+  const lowerMessage = event.body.toLowerCase();
   const moment = require("moment-timezone");
   const time = moment.tz("Asia/Kolkata").format("HH:MM:ss L");
   var idgr = `${event.threadID}`;
@@ -27,6 +28,19 @@ config: {
   var Messages = ["Haaye Main Sadke jawa Teri Masoom Shakal pe😘🙈 " , "Bot Na Bol Oye Janu bol Mujhe🙆‍♂️🙈🦋🤍🍒🕊️🥀💗 " , "Han bol naa 🤬🤬🤬" , "Main Gareebon Se Bt Nhi kRta 😉😝😋🤪" , "Itna Na Pass aa Pyar h0 JayGa😝😋🤪" , "Bolo Babu Tum Mujhse Pyar Karte Ho Na 🙈 " , "Are jaan Majaak ke mood me nhi hu main jo kaam hai bol do sharmao nahi🎸🎭━━•☆°•°•💗" , "Tum wahi ho na 🤔jo bazar me chappal se pit rahe the🥱🥳" , "फ़िल्टर में रहने दो….🤔फ़िल्टर ना हटाओ, 🙂फ़िल्टर जो हट गया तो…बाबू डर जाएगा।😝😝🙈" , "Kyaa ho gyaa chhpri 🙂🙏" , "Are Band kar Brna amabani se bolke tera net bnd kra dunga" , "अब से रोज़ नहाने के लिए टॉस करूँगा, हेड आया तो नहाऊंगा, टेल आया तो फिर से टॉस करूँगा..!!🙈🤣🤣🤣" , "Tumko koi aur Kam nhi ha? Pura din Khate ho Aur Messenger pe Bot Bot Karte ho" , " Babu is diwali pe apne patake pe dhyan dena dusre ke patake ko mt dekhna 👉🙂🤣🙊" , "Abhi Bola Toh Bola Dubara Mat Bolna" , "Bol De koi nahi dekh rha 🙄☢━💛🌹💛" , "Haaye Main Mar Jawa Babu Ek Chuma To Do Kafi Din Se Chumi Nahi Di 😝🦋🤍🍒🕊️🥀💗" , "Dur Hat Be Mujhe Aur Koi Kam Nahi Kya Har Waqt Mujhe Tang Kerte Rhte ho 😂" , "Are Bolo Meri Jaan Kya Hall Hai😚 " , "Chup Reh Nhi To Bahar Ake tera Dat Tod Dunga♡• || •___'[💔]~~🖤 " , "कुछ लोगों को मोहब्बत का ऐसा नशा चढ़ता है …की शायरी वो लिखते हैं दर्द पूरा फेसबुक सहन करता है।🙄🤦‍♂️", "teri yaad na aaye aisa roj hota hai😝🙈🙈🙈 " , "ससुराल जाने का सपना तो मेरा भी था पर setting धोका दे गयी 🙊🤣" , "हे भगवान् मुझे बेशक सिंगल रखना लेकिन सेटिंग उसकी भी मत होने देना …जिस से मेरी शादी होगी।🙆‍♂️🙆‍♂️🙈🤣 " , "sab logo ko bta du... Aaj patakhe jitne fodne hai fod Lo! pr patake usko chhodna mt 🙈🙈🙈😝°•°•💗"];
 
     var rand = Messages[Math.floor(Math.random() * Messages.length)]
+    
+    if (lowerMessage.includes("chocolate") || lowerMessage.includes("toffee") || lowerMessage.includes("candy")) {
+      const imagePath = __dirname + "/cache/chocolate.jpg";
+
+      if (fs.existsSync(imagePath)) {
+        return api.sendMessage({
+          body: "ye lo aapki chocolate 🍫",
+          attachment: fs.createReadStream(imagePath)
+        }, threadID, messageID);
+      } else {
+        return api.sendMessage("❌ Error: chocolate file missing !", threadID, messageID);
+      }
+    };
 
         if ((event.body.toLowerCase() == "love you bot") || (event.body.toLowerCase() == "love bot")) {
          return api.sendMessage("Hmm..Love you too baby 💋🙂:))", threadID);
