@@ -32,7 +32,7 @@ module.exports = {
         // Check if the user's message contains any sweet-related word
         if (sweetWords.some(word => userMessage.includes(word))) {
             // Define the path to the chocolate.jpg image in the cache folder
-            const imagePath = path.join(__dirname, "cache", "chocolate.jpg");
+            const imagePath = path.join(__dirname, "cache", "icecream.jpg");
 
             // Check if the image exists
             if (fs.existsSync(imagePath)) {
