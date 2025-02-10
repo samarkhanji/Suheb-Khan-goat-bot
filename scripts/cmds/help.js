@@ -32,9 +32,11 @@ module.exports = {
 
     if (args.length === 0) {
       const categories = {};
-      let msg = "╭───────❁";
+      let msg = "♡   ∩_∩
+ （„• ֊ •„)♡
+╭─∪∪──────────⟡";
 
-      msg += `\n│✨𝐁𝐋𝐀𝐙𝐄𝐑 𝐂𝐌𝐃𝐒 ✨ \n╰────────────❁`; 
+      msg += `\n│✨ 𝑹𝗔𝑱🙂 ✨ \n╰───────────────⟡`; 
 
       for (const [name, value] of commands) {
         if (value.config.role > 1 && role < value.config.role) continue;
@@ -46,25 +48,31 @@ module.exports = {
 
       Object.keys(categories).forEach((category) => {
         if (category !== "info") {
-          msg += `\n╭─────🧸『  ${category.toUpperCase()}  』`;
+          msg += `\n♡   ∩_∩
+ （„• ֊ •„)♡
+╭─∪∪────────⟡🙂『  ${category.toUpperCase()}  』`;
 
 
           const names = categories[category].commands.sort();
           for (let i = 0; i < names.length; i += 3) {
-            const cmds = names.slice(i, i + 2).map((item) => `\n ✨🩸➣🎯${item}🎯`);
+            const cmds = names.slice(i, i + 2).map((item) => `\n ─────⟡🎯${item}🙂`);
             msg += `\n│${cmds.join(" ".repeat(Math.max(1, 5 - cmds.join("").length)))}`;
           }
 
-          msg += `\n╰────────────シ`;
+          msg += `\n╰──────────────⟡`;
         }
       });
 
       const totalCommands = commands.size;
       msg += `\nαƈƚυҽʅʅҽɱҽɳƚ  ʅҽ Ⴆσƚ  ԃιʂρσʂҽ  ԃҽ 🍁${totalCommands}🍁 ƈσɱɱαɳԃҽʂ !\n`;
       msg += `ʂαιʂιʂ 🎶${prefix}ԋҽʅρ🎶  ʂυιʋι ԃυ ɳσɱ ԃҽ ʅα ƈσɱɱαɳԃҽ ρσυɾ ƈσɳɳαιƚɾҽ𝐞 ρʅυʂ ԃҽ ԃҽƚαιʅ ʂυɾ ʅα ƈɱԃ !`;
-      msg += `\n╭─────✰\n |✨ 『𒁍 ⟬ 𓆩𝐑𝐚𝐣 ‣⃟ ⃝𑁍𓆪᭄ 達 ⟭ ꪹ 爾 ᯽⸺›⁐‡𖣴‣ ⸨⸙⸩』ホ \n╰────────────✰`; 
+      msg += `\n♡   ∩_∩
+ （„• ֊ •„)♡
+╭─∪∪────────✰\n |✨ 『𒁍 ⟬ 𓆩𝐑𝐚𝐣 ‣⃟ ⃝𑁍𓆪᭄ 達 ⟭ ꪹ 爾 ᯽⸺›⁐‡𖣴‣ ⸨⸙⸩』ホ \n╰──♡   ∩_∩
+ （„• ֊ •„)♡
+─∪∪──────────✰`; 
 
- 				const helpListImages = [ "https://i.imgur.com/GSxUIa4.gif" ];
+ 				const helpListImages = [ "https://i.imgur.com/zcFKSDb.jpeg","https://i.imgur.com/eqXy67y.jpeg","https://i.imgur.com/zcFKSDb.jpeg","https://i.imgur.com/ikNU4Tk.jpeg" ];
 
 
       const helpListImage = helpListImages[Math.floor(Math.random() * helpListImages.length)];
@@ -90,7 +98,9 @@ module.exports = {
         const usage = guideBody.replace(/{p}/g, prefix).replace(/{n}/g, configCommand.name);
 
         const response = `
-  ╭───⸙
+   ♡   ∩_∩
+ （„• ֊ •„)♡
+  ╭─∪∪─────────────────────⟡⸙
   │ 🔶 ${configCommand.name}
   ├── INFO
   │ 📝 𝗗𝗲𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻: ${longDescription}
@@ -99,7 +109,7 @@ module.exports = {
   ├── USAGE
   │ 🔯 𝗩𝗲𝗿𝘀𝗶𝗼𝗻: ${configCommand.version || "1.0"}
   │ ♻𝗥𝗼𝗹𝗲: ${roleText}
-  ╰────────────ツ`;
+  ╰────────────────────────⟡`;
 
         await message.reply(response);
       }
