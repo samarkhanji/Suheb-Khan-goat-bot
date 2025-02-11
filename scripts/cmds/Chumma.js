@@ -22,7 +22,7 @@ module.exports = {
     const lowerMessage = event.body.toLowerCase();
 
     if (lowerMessage.includes("Kiss Me") || lowerMessage.includes("Kiss") || lowerMessage.includes("kiss me")) {
-      const imagePath = __dirname + "/cache/kiss.jpg";
+      const imagePath = __dirname + "/cache/kiss.mp4";
 
       if (fs.existsSync(imagePath)) {
         return api.sendMessage({
