@@ -18,14 +18,14 @@ module.exports = {
     if (event.body) {
       const word = event.body.toLowerCase();
       switch (word) {
-        case "goodnight":
+        case "Good night":
           message.reply({
-            body: "∘₊✧─────────────────✧₊∘\n  Goodnight Everyone Sleepwell! 🌃",
+            body: "∘₊✧─────────────────✧₊∘\n  Chal Bhag So Ja Jaldi Nahi Yo Bhoot ajaiyega \n👻👻👻\n👻👻👻\n👻👻👻",
             attachment: fs.createReadStream("scripts/cmds/noprefix/goodnight.gif"),
           });
           await api.setMessageReaction("🌃", event.messageID, event.threadID, api);
         break;
-case "goodmorning":
+case "Good morning","Good Morning":
           message.reply({
             body: "∘₊✧─────────────────✧₊∘\n          Goodmorning Everyone!\n                 Have A Nice Day 🌇",
             attachment: fs.createReadStream("scripts/cmds/noprefix/goodmorning.gif"),
