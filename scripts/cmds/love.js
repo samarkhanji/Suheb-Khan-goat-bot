@@ -1,59 +1,140 @@
- module.exports = {
-  config: {
-    name: "love",
-    aliases: ["lve"],
-    version: "1.0",
-    author: "ʬɸʬ Blåzė Nøvã ʬɸʬ",
-    countDown: 10,
-    role: 0,
-    shortDescription: "Play miss, the oldest gambling game",
-    longDescription: "Play miss, the oldest gambling game, and earn money",
-    category: "game",
-    guide: "{pn} <amy/rouge> <amount of money>"
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+const loveCalculator = {
+  getRandomPercentage: () => Math.floor(Math.random() * 101),
+
+  getLoveComment: async (percentage) => {
+    if (percentage < 10) {
+      return {
+        comment: "It's better to find another partner☺️",
+        gifLink: "https://i.imgur.com/l74sepy.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1CYTTaxQIMIdXXdYFO6UN1ShdQiasaUX9"
+      };
+    } else if (percentage < 20) {
+      return {
+        comment: "The chance of success is very low 💔",
+        gifLink: "https://i.imgur.com/GdgW1fm.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1BN_FCS8hNqrg4vgq7mso9zPlR5RW0JD7"
+      };
+    } else if (percentage < 30) {
+      return {
+        comment: "Very low chance.\nYou both have to work on it 💐",
+        gifLink: "https://i.imgur.com/2oLW6ow.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1RiIqz4YwL9xbcoGa5svtFsGpmewEaCj0"
+      };
+    } else if (percentage < 40) {
+      return {
+        comment: "Not bad, give your\nbest to make it a success 💝",
+        gifLink: "https://i.imgur.com/rqGLgqm.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1eycxUA5jDZB_LSheX0kkZU-pwE7o1TbM"
+      };
+    } else if (percentage < 50) {
+      return {
+        comment: "You two will be a fine couple\nbut not perfect 😔💟",
+        gifLink: "https://i.imgur.com/6wAxorq.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1P83CMEWiZ08eMr6G5kMyBZ7DYlljMWac"
+      };
+    } else if (percentage < 60) {
+      return {
+        comment: "You two have some potential.\nKeep working on it! 💏",
+        gifLink: "https://i.imgur.com/ceDO779.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1_RjvyfAbJEQc5M9v-2_9lEuczp5I5nFy"
+      };
+    } else if (percentage < 70) {
+      return {
+        comment: "You two will be a nice couple 💑",
+        gifLink: "https://i.imgur.com/pGuGuC0.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1AkwiVnY7kpHTwLKi0hZv4jT19UKc5x4C"
+      };
+    } else if (percentage < 80) {
+      return {
+        comment: "If you two keep loving each other\nor confess your feelings,\nit might make some good changes 👩‍❤️‍💋‍👨",
+        gifLink: "https://i.imgur.com/bt77RPY.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1jGiEvE6namRCfMU2IEOU7bFzFX5QrSGu"
+      };
+    } else if (percentage < 90) {
+      return {
+        comment: "Perfect match!\nYour love is meant to be! 💑",
+        gifLink: "https://i.imgur.com/kXNlsFf.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1kx4HkDM-SBF2h62Na_gHTmow653zL0nm"
+      };
+    } else {
+      return {
+        comment: "Amazing perfectly matched!\nYou two are meant to be for each other.\nBest wishes for your future! 👩‍❤️‍💋‍👨💐",
+        gifLink: "https://i.imgur.com/sY03YzC.gif",
+        audioLink: "https://drive.google.com/uc?export=download&id=1NNML3BkFOWuRodg2VBsgQNfV_pgSDa1I"
+      };
+    }
   },
 
-  onStart: async function ({ args, message, usersData, event }) {
-    const betType = args[0];
-    const betAmount = parseInt(args[1]);
-    const user = event.senderID;
-    const userData = await usersData.get(event.senderID);
+  downloadGif: async (gifLink, localPath) => {
+    const response = await axios.get(gifLink, { responseType: 'arraybuffer' });
+    fs.writeFileSync(localPath, Buffer.from(response.data, 'binary'));
+  },
 
-    if (!["amy", "rouge"].includes(betType)) {
-      return message.reply("🎶| ℭ𝔥𝔬𝔦𝔰𝔦𝔰 𝔞𝔪𝔶 𝔬𝔲 𝔯𝔬𝔲𝔤𝔢");
-    }
+  downloadAudio: async (audioLink, localPath) => {
+    const response = await axios.get(audioLink, { responseType: 'arraybuffer' });
+    fs.writeFileSync(localPath, Buffer.from(response.data, 'binary'));
+  },
 
-    if (!Number.isInteger(betAmount) || betAmount < 1000) {
-      return message.reply("👻| 𝑷𝒂𝒓𝒅𝒐𝒏 𝒅𝒆𝒎𝒂𝒏𝒅𝒆 𝒕𝒓𝒂𝒏𝒔𝒇𝒆𝒓𝒕 𝒂 𝒒𝒖𝒆𝒍𝒒𝒖'𝒖𝒏");
-    }
+  run: async ({ api, event, threadsData, usersData }) => {
+      const uidI = event.senderID;
+      const name1 = await usersData.getName(uidI);
+      const threadData = await threadsData.get(event.threadID);
+      const members = threadData.members.filter(member => member.inGroup);
 
-    if (betAmount > userData.money) {
-      return message.reply("𝑪𝒐𝒏𝒕𝒊𝒏𝒖𝒔 𝒅𝒆 𝒑𝒆𝒓𝒅𝒓𝒆 𝒆𝒕 𝒕𝒐𝒏 𝒄𝒐𝒆𝒖𝒓 𝒔𝒆𝒓𝒂 𝒂 𝒎𝒐𝒊🫀");
-    }
+      const randomIndex = Math.floor(Math.random() * members.length);
+      const randomMember = members[randomIndex];
 
-    const dice = [1, 2, 3, 4, 5, 6];
-    const results = [];
+      if (!randomMember) {
+        return api.sendMessage("Couldn't find any members in the thread.", event.threadID, event.messageID);
+      }
 
-    for (let i = 0; i < 3; i++) {
-      const result = dice[Math.floor(Math.random() * dice.length)];
-      results.push(result);
-    }
+      const lovePercentage = loveCalculator.getRandomPercentage();
+      const { comment, gifLink, audioLink } = await loveCalculator.getLoveComment(lovePercentage);
 
-    const winConditions = {
-      small: results.filter((num, index, arr) => num >= 1 && num <= 3 && arr.indexOf(num) !== index).length > 0,
-      big: results.filter((num, index, arr) => num >= 4 && num <= 6 && arr.indexOf(num) !== index).length > 0,
-    };
+      const gifPath = path.join(__dirname, 'cache', 'downloaded.gif');
+      const audioPath = path.join(__dirname, 'cache', 'downloaded.mp3');
 
-    const resultString = results.join(" | ");
+     
+      setTimeout(async () => {
+        await loveCalculator.downloadGif(gifLink, gifPath);
 
-    if ((winConditions[betType] && Math.random() <= 0.4) || (!winConditions[betType] && Math.random() > 0.4)) {
-      const winAmount = 4 * betAmount;
-      userData.money += winAmount;
-      await usersData.set(event.senderID, userData);
-      return message.reply(`🥷🩸𝙎𝙊𝙉𝙄𝘾🎁🎈\n━━━━━━━━━━━━━━━━\n[ 💧${resultString}💧 ]\n🎯 | 𝑩𝒓𝒂𝒗𝒐 𝒕'𝒂𝒔 𝒈𝒂𝒈𝒏𝒆 🌱${winAmount}€🌱`);
-    } else {
-      userData.money -= betAmount;
-      await usersData.set(event.senderID, userData);
-      return message.reply(`🥷🩸𝙎𝙊𝙉𝙄𝘾🎁🎈\n━━━━━━━━━━━━━━━━\n[💧${resultString}💧]\n\n🎯 | 𝑀𝑒𝑟𝑑𝑒....🙍 𝑐𝑜𝑚𝑚𝑒𝑛𝑡 𝑡𝑢 𝑝𝑒𝑢𝑥 𝑝𝑒𝑟𝑑𝑟𝑒 🌱${betAmount}€🌱`);
-    }
-  }
-}
+       
+        const message = `${name1}🤍${randomMember.name}\n𝗹𝗼𝘃𝗲 𝗽𝗲𝗿𝗰𝗲𝗻𝘁𝗮𝗴𝗲: ${lovePercentage}%\n${comment}`;
+        const gifReadStream = fs.createReadStream(gifPath);
+        api.sendMessage({ body: message, attachment: gifReadStream }, event.threadID, event.messageID);
+
+        
+        await loveCalculator.downloadAudio(audioLink, audioPath);
+
+       
+        const audioReadStream = fs.createReadStream(audioPath);
+        api.sendMessage({ body: "", attachment: audioReadStream }, event.threadID);
+      }, 1);
+    },
+  };
+
+  module.exports = {
+    config: {
+      name: "love",
+      aliases: [],
+      author: "Raj",
+      version: "2.0",
+      cooldowns: 5,
+      role: 0,
+      shortDescription: {
+        en: "",
+      },
+      longDescription: {
+        en: "calculate love percentage",
+      },
+      category: "𝗙𝗨𝗡",
+      guide: {
+        en: "{p}{n} to calculate love percentage",
+      },
+    },
+    onStart: loveCalculator.run,
+  };
