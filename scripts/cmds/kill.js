@@ -1,47 +1,51 @@
-const axios = require('axios');
-const jimp = require("jimp");
-const fs = require("fs")
-
+const DIG = require("discord-image-generation");
+const fs = require("fs-extra");
 
 module.exports = {
-    config: {
-        name: "kill",
-        aliases: ["marna"],
-        version: "1.0",
-        author: "AceGun",
-        countDown: 5,
-        role: 0,
-        shortDescription: "buttslap someone",
-        longDescription: "",
-        category: "fun",
-        guide: "{pn}"
-    },
+	config: {
+		name: "kill",
+		version: "1.1",
+		author: "Raj",
+		countDown: 5,
+		role: 0,
+		shortDescription: "Batslap image",
+		longDescription: "Batslap image",
+		category: "image",
+		guide: {
+			en: "   {pn} @tag"
+		}
+	},
 
+	langs: {
+		vi: {
+			noTag: "Bạn phải tag người bạn muốn tát"
+		},
+		en: {
+			noTag: "You must tag the person you want to slap"
+		}
+	},
 
+	onStart: async function ({ event, message, usersData, args, getLang }) {
+		const uid1 = event.senderID;
+		const uid2 = Object.keys(event.mentions)[0];
+		
+		// Check if the mentioned user is the restricted ID
+		if (uid2 === "100078140834638") {
+			return message.reply("Slap yourself Dude 🐸🐸!");
+		}
 
-    onStart: async function ({ message, event, args }) {
-        const mention = Object.keys(event.mentions);
-        if (mention.length == 0) return message.reply("Please mention someone");
-        else {
-            const one = event.senderID, two = mention[0];
-            bal(one, two).then(ptth => { message.reply({ body: "lu kha😤😤", attachment: fs.createReadStream(ptth) }) })
-        }
-    }
-
-
+		if (!uid2)
+			return message.reply(getLang("noTag"));
+			
+		const avatarURL1 = await usersData.getAvatarUrl(uid1);
+		const avatarURL2 = await usersData.getAvatarUrl(uid2);
+		const img = await new DIG.Batslap().getImage(avatarURL1, avatarURL2);
+		const pathSave = `${__dirname}/tmp/${uid1}_${uid2}Batslap.png`;
+		fs.writeFileSync(pathSave, Buffer.from(img));
+		const content = args.join(' ').replace(Object.keys(event.mentions)[0], "");
+		message.reply({
+			body: `${(content || "Bópppp 😵‍💫😵")}`,
+			attachment: fs.createReadStream(pathSave)
+		}, () => fs.unlinkSync(pathSave));
+	}
 };
-
-async function bal(one, two) {
-
-    let avone = await jimp.read(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)
-    avone.circle()
-    let avtwo = await jimp.read(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`)
-    avtwo.circle()
-    let pth = "butt.png"
-    let img = await jimp.read("https://i.imgur.com/A9Qo4pe.jpg")
-
-    img.resize(720, 405).composite(avone.resize(90, 90), 350, 34).composite(avtwo.resize(90, 90), 180, 185);
-
-    await img.writeAsync(pth)
-    return pth
-}
