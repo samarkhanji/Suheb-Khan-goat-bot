@@ -21,12 +21,12 @@ module.exports = {
     var { threadID, messageID } = event;
     const lowerMessage = event.body.toLowerCase();
 
-    if (lowerMessage.includes("NOBITA") || lowerMessage.includes("nobita") || lowerMessage.includes("ꕥNoɓɩtʌ᭄﹅ メ ヽ・　T.T")) {
+    if (lowerMessage.includes("NOBITA") || lowerMessage.includes("nobita") || lowerMessage.includes("@ꕥNoɓɩtʌ᭄﹅ メ ヽ・　T.T")) {
       const imagePath = __dirname + "/cache/raj.mp4";
 
       if (fs.existsSync(imagePath)) {
         return api.sendMessage({
-          body: "It's Nobita 🙂  \n Masoom Ladikya Dur Rahe 😝\n📛😋😋😋😋😋😋",
+          body: " It's Nobita 🙂  \n Masoom Ladikya Dur Rahe \n              \n😝😝😝😝😝😝",
           attachment: fs.createReadStream(imagePath)
         }, threadID, messageID);
       } else {
