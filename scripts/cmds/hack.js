@@ -70,13 +70,13 @@ module.exports = {
     let canvas = createCanvas(baseImage.width, baseImage.height);
     let ctx = canvas.getContext("2d");
     ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-    ctx.font = "400 10px Arial";
+    ctx.font = "400 23px Arial";
     ctx.fillStyle = "#1878F3";
     ctx.textAlign = "start";
     const lines = await this.wrapText(ctx, name, 1160);
-    ctx.fillText(lines.join("\n"), 200, 497); //comment
+    ctx.fillText(lines.join("\n"), 127, 330); //comment
     ctx.beginPath();
-    ctx.drawImage(baseAvt1, 150, 10, 50, 101);
+    ctx.drawImage(baseAvt1, 53, 290, 70, 70);
     const imageBuffer = canvas.toBuffer();
     fs.writeFileSync(pathImg, imageBuffer);
     fs.removeSync(pathAvt1);
