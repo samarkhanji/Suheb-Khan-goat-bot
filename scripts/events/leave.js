@@ -23,7 +23,7 @@ module.exports = {
 			session2: "noon",
 			session3: "afternoon",
 			session4: "evening",
-			leaveType1: "🥳 Ye Dar zkar Bhag Gaya ",
+			leaveType1: "🥳 Ye Dar kar Bhag Gaya 😹😹",
 			leaveType2: "𝗟'𝗮𝗱𝗺𝗶𝗻 𝗮̀ 𝘃𝗶𝗿𝗲 𝘂𝗻 𝗰𝗼𝗻",
 			defaultLeaveMessage: "{userName} {type} Group sw"
 		}
