@@ -1,92 +1,52 @@
-const axios = require('axios');
+const axios = require("axios");
 const yts = require("yt-search");
 
-const baseApiUrl = async () => {
-    const base = await axios.get(
-        `https://raw.githubusercontent.com/Blankid018/D1PT0/main/baseApiUrl.json`
-    );
-    return base.data.api;
-};
-
-(async () => {
-    global.apis = {
-        diptoApi: await baseApiUrl()
-    };
-})();
-
-async function getStreamFromURL(url, pathName) {
-    try {
-        const response = await axios.get(url, {
-            responseType: "stream"
-        });
-        response.data.path = pathName;
-        return response.data;
-    } catch (err) {
-        throw err;
-    }
-}
-
-global.utils = {
-    ...global.utils,
-    getStreamFromURL: global.utils.getStreamFromURL || getStreamFromURL
-};
-
-function getVideoID(url) {
-    const checkurl = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/;
-    const match = url.match(checkurl);
-    return match ? match[1] : null;
-}
-
-const config = {
-    name: "music",
-    author: "Mesbah Saxx",
-    version: "1.2.0",
-    role: 0,
-    Description: "",
-    prefix: true,
-    category: "media",
-    countDown: 5,
-};
-
-async function onStart({ api, args, event }) {
-    try {
-        let videoID;
-        const url = args[0];
-        let w;
-
-        if (url && (url.includes("youtube.com") || url.includes("youtu.be"))) {
-            videoID = getVideoID(url);
-            if (!videoID) {
-                await api.sendMessage("Invalid YouTube URL.", event.threadID, event.messageID);
-            }
-        } else {
-            const songName = args.join(' ');
-            w = await api.sendMessage(`Searching song "${songName}"... `, event.threadID);
-            const r = await yts(songName);
-            const videos = r.videos.slice(0, 50);
-
-            const videoData = videos[Math.floor(Math.random() * videos.length)];
-            videoID = videoData.videoId;
-        }
-
-        const { data: { title, quality, downloadLink } } = await axios.get(`${global.apis.diptoApi}/ytDl3?link=${videoID}&format=mp3`);
-
-        api.unsendMessage(w.messageID);
-        
-        const o = '.php';
-        const shortenedLink = (await axios.get(`https://tinyurl.com/api-create${o}?url=${encodeURIComponent(downloadLink)}`)).data;
-
-        await api.sendMessage({
-            body: `🔖 - 𝚃𝚒𝚝𝚕𝚎: ${title}\n✨ - 𝚀𝚞𝚊𝚕𝚒𝚝𝚢: ${quality}\n\n📥 - 𝙳𝚘𝚠𝚗𝚕𝚘𝚊𝚍 𝙻𝚒𝚗𝚔: ${shortenedLink}`,
-            attachment: await global.utils.getStreamFromURL(downloadLink, title+'.mp3')
-        }, event.threadID, event.messageID);
-    } catch (e) {
-        api.sendMessage(e.message || "An error occurred.", event.threadID, event.messageID);
-    }
-}
-
 module.exports = {
-    config,
-    onStart,
-    run: onStart
+  config: {
+    name: "music",
+    aliases: ["audio", "song"],
+    version: "1.1",
+    author: "Mr-Perfect",
+    countDown: 5,
+    role: 0,
+    shortDescription: "Download audio from YouTube",
+    longDescription: "Searches YouTube and downloads audio in MP3 format.",
+    category: "media",
+    guide: "{pn} <song name or YouTube URL>"
+  },
+
+  onStart: async function ({ message, args }) {
+    try {
+      if (!args.length) return message.reply("❌ Please provide a song name or YouTube link.");
+
+      let videoUrl = args.join(" ");
+      if (!videoUrl.includes("youtube.com") && !videoUrl.includes("youtu.be")) {
+        message.reply("🔎 Searching for the song...");
+        const searchResults = await yts(videoUrl);
+        if (!searchResults.videos.length) return message.reply("⚠️ No results found for your query.");
+        videoUrl = searchResults.videos[0].url;
+      }
+
+      
+      const apiUrl = `https://apis.davidcyriltech.my.id/youtube/mp3?url=${videoUrl}`;
+      const response = await axios.get(apiUrl);
+      if (!response.data || !response.data.success || !response.data.result.downloadUrl) {
+        return message.reply("❌ Failed to fetch the audio. Try again later.");
+      }
+
+    
+      const audioUrl = response.data.result.downloadUrl;
+      const title = response.data.result.title || "Unknown Title";
+
+    
+      await message.reply({
+        body: `🎵 *Title:* ${title}\n🔗 *Link:* ${videoUrl}`,
+        attachment: await global.utils.getStreamFromURL(audioUrl, `${title}.mp3`)
+      });
+
+    } catch (error) {
+      console.error("Error in music command:", error);
+      message.reply("⚠️ An error occurred while processing your request.");
+    }
+  }
 };
