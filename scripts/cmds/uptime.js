@@ -4,7 +4,7 @@ module.exports = {
 aliases: ["upt"],
     version: "1.0",
     author: "OtinXSandip",
-    role: 2,
+    role: 0,
     shortDescription: {
       en: "Displays the total number of users of the bot and check uptime "
     },
