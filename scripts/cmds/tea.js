@@ -1,14 +1,15 @@
 const fs = require("fs-extra");
+const axios = require("axios");
 
 module.exports = {
   config: {
     name: "tea",
     version: "1.0",
-    author: "Priyansh",
+    author: "Mr Perfect",
     countDown: 5,
     role: 0,
     shortDescription: "no-prefix",
-    longDescription: "Bot Will Reply You In Engish/Bangla Language",
+    longDescription: "Bot Will Reply You In English/Bangla Language",
     category: "no prefix",
     guide: {
       en: "{p}{n}",
@@ -19,18 +20,36 @@ module.exports = {
 
   onChat: async function ({ api, event }) {
     var { threadID, messageID } = event;
-    const lowerMessage = event.body.toLowerCase();
+    const messageText = event.body.toLowerCase().trim();
 
-    if (lowerMessage.includes("tea") || lowerMessage.includes("TEA") || lowerMessage.includes("chai")) {
-      const imagePath = __dirname + "/cache/tea.mp4";
+    if (messageText === "tea" || messageText === "chai" || messageText === "☕" || messageText === "Coffee") {
+      const mitsukiURL = "https://i.imgur.com/5ppt95h.mp4"; 
+      const mitskiPath = __dirname + "/cache/perfect_wife.mp4"; 
 
-      if (fs.existsSync(imagePath)) {
-        return api.sendMessage({
-          body: "Ye lo aapki chai pyar se banaya hu apne chote chote hatho se \n📛😋😋😋😋😋😋",
-          attachment: fs.createReadStream(imagePath)
-        }, threadID, messageID);
-      } else {
-        return api.sendMessage("❌ Error: tea file missing !", threadID, messageID);
+      try {
+        const response = await axios({
+          url: mitsukiURL,
+          method: "GET",
+          responseType: "stream"
+        });
+
+        const writer = fs.createWriteStream(mitskiPath);
+        response.data.pipe(writer);
+
+        writer.on("close", () => {
+          if (fs.existsSync(mitskiPath)) {
+            api.sendMessage({
+              body: "Ye lo aapki chai pyar se banaya hu apne chote chote hatho se \n📛😋😋😋😋😋😋",
+              attachment: fs.createReadStream(mitskiPath)
+            }, threadID, () => fs.unlinkSync(mitskiPath));
+          } else {
+            api.sendMessage("❌ Error: Video download failed!", threadID, messageID);
+          }
+        });
+
+      } catch (error) {
+        console.error("Download Error:", error);
+        return api.sendMessage("❌ Error: Unable to fetch the video!", threadID, messageID);
       }
     }
   }
