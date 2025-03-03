@@ -1,4 +1,4 @@
-#cmd install video.js const fs = require("fs");
+const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const yts = require("yt-search");
