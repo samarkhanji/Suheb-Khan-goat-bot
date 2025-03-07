@@ -82,7 +82,7 @@ module.exports = {
     fs.removeSync(pathAvt1);
     return api.sendMessage(
       {
-        body: "    ! My Lord, Please Check Your Inbox.",
+        body: "    ! He is a dangerous criminal and anyone who catches him dead or alive will be given one dollar ðŸ’°.",
         attachment: fs.createReadStream(pathImg),
       },
       event.threadID,
