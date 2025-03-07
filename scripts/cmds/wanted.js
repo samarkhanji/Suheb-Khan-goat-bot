@@ -1,54 +1,93 @@
-const axios = require('axios');
-const jimp = require("jimp");
-const fs = require("fs");
+const { loadImage, createCanvas } = require("canvas");
+const fs = require("fs-extra");
+const axios = require("axios");
 
 module.exports = {
   config: {
     name: "wanted",
-    aliases: ["wanted"],
-    version: "1.0",
-    author: "AceGun",
+    author: "Raj",
     countDown: 5,
     role: 0,
-    shortdescription: "wanted frame for fun purpose",
-    longDescription: "",
     category: "fun",
-    guide: ""
+    shortDescription: {
+      en: "Generates a 'hacking' image with the user's profile picture.",
+    },
+  },
+  wrapText: async (ctx, name, maxWidth) => {
+    return new Promise((resolve) => {
+      if (ctx.measureText(name).width < maxWidth) return resolve([name]);
+      if (ctx.measureText("W").width > maxWidth) return resolve(null);
+      const words = name.split(" ");
+      const lines = [];
+      let line = "";
+      while (words.length > 0) {
+        let split = false;
+        while (ctx.measureText(words[0]).width >= maxWidth) {
+          const temp = words[0];
+          words[0] = temp.slice(0, -1);
+          if (split) words[1] = `${temp.slice(-1)}${words[1]}`;
+          else {
+            split = true;
+            words.splice(1, 0, temp.slice(-1));
+          }
+        }
+        if (ctx.measureText(`${line}${words[0]}`).width < maxWidth)
+          line += `${words.shift()} `;
+        else {
+          lines.push(line.trim());
+          line = "";
+        }
+        if (words.length === 0) lines.push(line.trim());
+      }
+      return resolve(lines);
+    });
   },
 
-  onStart: async function ({ message, event, args }) {
-    const mention = Object.keys(event.mentions);
-    if (mention.length < 2) {
-      message.reply("Tag your two friends to invite them in wanted frame");
-      return;
-    }
-
-    // Add the sender ID to the `mention` array
-    mention.push(event.senderID);
-
-    let [one, two, three] = mention;
-
-    try {
-      const imagePath = await bal(one, two, three);
-      await message.reply({
-        body: "These guys are wanted",
-        attachment: fs.createReadStream(imagePath)
-      });
-    } catch (error) {
-      console.error("Error while running command:", error);
-      await message.reply("an error occurred");
-    }
-  }
+  onStart: async function ({ args, usersData, threadsData, api, event }) {
+    let pathImg = __dirname + "/tmp/background.png";
+    let pathAvt1 = __dirname + "/tmp/Avtmot.png";
+    var id = Object.keys(event.mentions)[0] || event.senderID;
+    var name = await api.getUserInfo(id);
+    name = name[id].name;
+    var ThreadInfo = await api.getThreadInfo(event.threadID);
+    var background = ["https://i.imgur.com/1n5GFll.png"];
+    var rd = background[Math.floor(Math.random() * background.length)];
+    let getAvtmot = (
+      await axios.get(
+        `https://graph.facebook.com/${id}/picture?width=720&height=720&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`,
+        { responseType: "arraybuffer" }
+      )
+    ).data;
+    fs.writeFileSync(pathAvt1, Buffer.from(getAvtmot, "utf-8"));
+    let getbackground = (
+      await axios.get(`${rd}`, {
+        responseType: "arraybuffer",
+      })
+    ).data;
+    fs.writeFileSync(pathImg, Buffer.from(getbackground, "utf-8"));
+    let baseImage = await loadImage(pathImg);
+    let baseAvt1 = await loadImage(pathAvt1);
+    let canvas = createCanvas(baseImage.width, baseImage.height);
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+    ctx.font = "400 23px Arial";
+    ctx.fillStyle = "#1878F3";
+    ctx.textAlign = "start";
+    const lines = await this.wrapText(ctx, name, 1160);
+    ctx.fillText(lines.join("\n"), 900, 330); //comment
+    ctx.beginPath();
+    ctx.drawImage(baseAvt1, 110, 180, 200, 200);
+    const imageBuffer = canvas.toBuffer();
+    fs.writeFileSync(pathImg, imageBuffer);
+    fs.removeSync(pathAvt1);
+    return api.sendMessage(
+      {
+        body: "    ! My Lord, Please Check Your Inbox.",
+        attachment: fs.createReadStream(pathImg),
+      },
+      event.threadID,
+      () => fs.unlinkSync(pathImg),
+      event.messageID
+    );
+  },
 };
-
-async function bal(one, two, three) {
-  const avatarOne = await jimp.read(`https://graph.facebook.com/${one}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`);
-  const avatarTwo = await jimp.read(`https://graph.facebook.com/${two}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`);
-  const avatarThree = await jimp.read(`https://graph.facebook.com/${three}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`);
-
-  const image = await jimp.read("https://i.ibb.co/7yPR6Xf/image.jpg");
-  image.resize(2452, 1226).composite(avatarOne.resize(405, 405), 206, 345).composite(avatarTwo.resize(400, 400), 1830, 350).composite(avatarThree.resize(450, 450), 1010, 315);
-  const imagePath = "Wanted.png";
-  await image.writeAsync(imagePath);
-  return imagePath;
-}
