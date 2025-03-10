@@ -9,7 +9,7 @@ module.exports = {
     version: "1.0.0",
     author: "aayuse",
     countDown: 5,
-    role: 2,
+    role: 0,
     shortDescription: {
       en: "Download YouTube videos (under 25MB) or provide a link",
     },
