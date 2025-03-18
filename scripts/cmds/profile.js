@@ -1,3 +1,4 @@
+const { GoatWrapper } = require("fca-liane-utils");
 module.exports = {
 	config: {
 		name: "profile",
@@ -41,3 +42,5 @@ aliases: ["pfp"],
 	})
   }
 }
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
