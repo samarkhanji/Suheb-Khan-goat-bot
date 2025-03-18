@@ -1,3 +1,4 @@
+const { GoatWrapper } = require("fca-liane-utils");
 const fs = require('fs');
 
 module.exports = {
@@ -33,3 +34,5 @@ module.exports = {
     api.sendMessage({ body: fileContent }, event.threadID);
   }
 }
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
