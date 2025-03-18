@@ -1,3 +1,4 @@
+const { GoatWrapper } = require("fca-liane-utils");
 const DIG = require("discord-image-generation");
 const fs = require("fs-extra");
 
@@ -45,3 +46,5 @@ else if(mention.length == 1){
 		}, () => fs.unlinkSync(pathSave));
 	}
 };
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
