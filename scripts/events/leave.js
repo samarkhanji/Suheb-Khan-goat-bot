@@ -1,4 +1,6 @@
 const { getTime, drive } = global.utils;
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
 	config: {
@@ -30,69 +32,48 @@ module.exports = {
 	},
 
 	onStart: async ({ threadsData, message, event, api, usersData, getLang }) => {
-		if (event.logMessageType == "log:unsubscribe")
-			return async function () {
-				const { threadID } = event;
-				const threadData = await threadsData.get(threadID);
-				if (!threadData.settings.sendLeaveMessage)
-					return;
-				const { leftParticipantFbId } = event.logMessageData;
-				if (leftParticipantFbId == api.getCurrentUserID())
-					return;
-				const hours = getTime("HH");
+		if (event.logMessageType == "log:unsubscribe") {
+			const { threadID } = event;
+			const threadData = await threadsData.get(threadID);
+			if (!threadData.settings.sendLeaveMessage) return;
 
-				const threadName = threadData.threadName;
-				const userName = await usersData.getName(leftParticipantFbId);
+			const { leftParticipantFbId } = event.logMessageData;
+			if (leftParticipantFbId == api.getCurrentUserID()) return;
 
-				// {userName}   : name of the user who left the group
-				// {type}       : type of the message (leave)
-				// {boxName}    : name of the box
-				// {threadName} : name of the box
-				// {time}       : time
-				// {session}    : session
+			const hours = getTime("HH");
+			const threadName = threadData.threadName;
+			const userName = await usersData.getName(leftParticipantFbId);
 
-				let { leaveMessage = getLang("defaultLeaveMessage") } = threadData.data;
-				const form = {
-					mentions: leaveMessage.match(/\{userNameTag\}/g) ? [{
-						tag: userName,
-						id: leftParticipantFbId
-					}] : null
-				};
+			let { leaveMessage = getLang("defaultLeaveMessage") } = threadData.data;
+			leaveMessage = leaveMessage
+				.replace(/\{userName\}/g, userName)
+				.replace(/\{type\}/g, leftParticipantFbId == event.author ? getLang("leaveType1") : getLang("leaveType2"))
+				.replace(/\{threadName\}/g, threadName)
+				.replace(/\{time\}/g, hours)
+				.replace(/\{session\}/g, hours <= 10 ? getLang("session1") :
+					hours <= 12 ? getLang("session2") :
+						hours <= 18 ? getLang("session3") :
+							getLang("session4"));
 
-				leaveMessage = leaveMessage
-					.replace(/\{userName\}|\{userNameTag\}/g, userName)
-					.replace(/\{type\}/g, leftParticipantFbId == event.author ? getLang("leaveType1") : getLang("leaveType2"))
-					.replace(/\{threadName\}|\{boxName\}/g, threadName)
-					.replace(/\{time\}/g, hours)
-					.replace(/\{session\}/g, hours <= 10 ?
-						getLang("session1") :
-						hours <= 12 ?
-							getLang("session2") :
-							hours <= 18 ?
-								getLang("session3") :
-								getLang("session4")
-					);
-
-				form.body = leaveMessage;
-
-				if (leaveMessage.includes("{userNameTag}")) {
-					form.mentions = [{
-						id: leftParticipantFbId,
-						tag: userName
-					}];
-				}
-
-				if (threadData.data.leaveAttachment) {
-					const files = threadData.data.leaveAttachment;
-					const attachments = files.reduce((acc, file) => {
-						acc.push(drive.getFile(file, "stream"));
-						return acc;
-					}, []);
-					form.attachment = (await Promise.allSettled(attachments))
-						.filter(({ status }) => status == "fulfilled")
-						.map(({ value }) => value);
-				}
-				message.send(form);
+			const form = {
+				body: leaveMessage,
+				mentions: leaveMessage.includes("{userNameTag}") ? [{
+					id: leftParticipantFbId,
+					tag: userName
+				}] : []
 			};
+
+			// **Folder se random video lena**
+			const gifFolder = path.join(__dirname, "cache/leaveGif/randomgif");
+			const files = fs.readdirSync(gifFolder).filter(file => file.endsWith(".mp4") || file.endsWith(".gif"));
+			
+			if (files.length > 0) {
+				const randomFile = files[Math.floor(Math.random() * files.length)];
+				const filePath = path.join(gifFolder, randomFile);
+				form.attachment = fs.createReadStream(filePath);
+			}
+
+			message.send(form);
+		}
 	}
 };
