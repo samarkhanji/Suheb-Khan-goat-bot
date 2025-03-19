@@ -1,51 +1,49 @@
-const DIG = require("discord-image-generation");
-const fs = require("fs-extra");
+const { GoatWrapper } = require("fca-liane-utils");
+const axios = require("axios");
+const request = require("request");
+const fs = require("fs");
 
 module.exports = {
-	config: {
-		name: "kill",
-		version: "1.1",
-		author: "Raj",
-		countDown: 5,
-		role: 0,
-		shortDescription: "Batslap image",
-		longDescription: "Batslap image",
-		category: "image",
-		guide: {
-			en: "   {pn} @tag"
-		}
-	},
+  config: {
+    name: "kill",
+    version: "1.0.0",
+    hasPermission: 0,
+    credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+    description: "Slap the friend tag",
+    commandCategory: "general",
+    usages: "kill [Tag someone you want to slap]",
+    cooldowns: 5
+  },
 
-	langs: {
-		vi: {
-			noTag: "Bạn phải tag người bạn muốn tát"
-		},
-		en: {
-			noTag: "You must tag the person you want to slap"
-		}
-	},
+  onStart: async function ({ message, event, args, api }) {
+    if (!event.mentions || Object.keys(event.mentions).length === 0) {
+      return message.reply("Please tag someone!");
+    }
 
-	onStart: async function ({ event, message, usersData, args, getLang }) {
-		const uid1 = event.senderID;
-		const uid2 = Object.keys(event.mentions)[0];
-		
-		// Check if the mentioned user is the restricted ID
-		if (uid2 === "100078140834638") {
-			return message.reply("Slap yourself Dude 🐸🐸!");
-		}
+    try {
+      const res = await axios.get("https://api.waifu.pics/sfw/slap");
+      const getURL = res.data.url;
+      const ext = getURL.substring(getURL.lastIndexOf(".") + 1);
+      const mentionID = Object.keys(event.mentions)[0];
+      const tag = event.mentions[mentionID].replace("@", "");
 
-		if (!uid2)
-			return message.reply(getLang("noTag"));
-			
-		const avatarURL1 = await usersData.getAvatarUrl(uid1);
-		const avatarURL2 = await usersData.getAvatarUrl(uid2);
-		const img = await new DIG.Batslap().getImage(avatarURL1, avatarURL2);
-		const pathSave = `${__dirname}/tmp/${uid1}_${uid2}Batslap.png`;
-		fs.writeFileSync(pathSave, Buffer.from(img));
-		const content = args.join(' ').replace(Object.keys(event.mentions)[0], "");
-		message.reply({
-			body: `${(content || "Bópppp 😵‍💫😵")}`,
-			attachment: fs.createReadStream(pathSave)
-		}, () => fs.unlinkSync(pathSave));
-	}
+      const filePath = `${__dirname}/cache/slap.${ext}`;
+      const fileStream = fs.createWriteStream(filePath);
+
+      request(getURL).pipe(fileStream).on("close", () => {
+        api.setMessageReaction("✅", event.messageID, () => {}, true);
+
+        message.reply({
+          body: `Slapped! ${tag}\n\n*sorry, I thought there's a mosquito*`,
+          mentions: [{ tag: tag, id: mentionID }],
+          attachment: fs.createReadStream(filePath)
+        }).then(() => fs.unlinkSync(filePath));
+      });
+    } catch (err) {
+      message.reply("❌ Failed to generate GIF, make sure you have tagged someone!");
+      api.setMessageReaction("☹️", event.messageID, () => {}, true);
+    }
+  }
 };
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
