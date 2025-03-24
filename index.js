@@ -19,10 +19,7 @@
 
 const { spawn } = require("child_process");
 const log = require("./logger/log.js");
-const express = require("express");
-const app = express();
 
-// Start Project
 function startProject() {
 	const child = spawn("node", ["Goat.js"], {
 		cwd: __dirname,
@@ -38,12 +35,4 @@ function startProject() {
 	});
 }
 
-// Start the Goat.js project
 startProject();
-
-
-// Set up the server to listen on a port
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
