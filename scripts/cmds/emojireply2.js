@@ -2,7 +2,7 @@ module.exports = {
   config: {
     name: "emojiReply2",
     version: "2.0",
-    author: "Your Name",
+    author: "Raj",
     description: "Super funny emoji-based auto-reply",
     category: "no prefix",
     cooldown: 3
