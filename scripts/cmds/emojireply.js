@@ -8,8 +8,10 @@ module.exports = {
     cooldown: 3
   },
 
-  onStart: async function () {
-    // Empty function taaki bot install ho sake
+  // This ensures the bot loads the functionality immediately
+  onStart: async function ({ api }) {
+    // Nothing needs to be done here, as the logic is within onChat
+    console.log("EmojiReply command loaded and ready to respond.");
   },
 
   onChat: async function ({ api, event }) {
