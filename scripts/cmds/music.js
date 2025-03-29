@@ -1,55 +1,9 @@
-const axios = require("axios");
-const yts = require("yt-search");
+const axios = require("axios"); const yts = require("yt-search"); const fs = require("fs"); const path = require("path");
 
-module.exports = {
-  config: {
-    name: "music",
-    aliases: ["audio", "song"],
-    version: "1.1",
-    author: "Nobita",
-    countDown: 5,
-    role: 0,
-    shortDescription: "Download audio from YouTube",
-    longDescription: "Searches YouTube and downloads audio in MP3 format.",
-    category: "media",
-    guide: "{pn} <song name or YouTube URL>"
-  },
+module.exports = { config: { name: "music", aliases: ["audio", "song"], version: "1.3", author: "Nobita", countDown: 5, role: 0, shortDescription: "Download audio or video from YouTube", longDescription: "Searches YouTube and downloads audio in MP3 format or video in MP4 format.", category: "media", guide: "{pn} [video]" },
 
-  onStart: async function ({ message, args }) {
-    try {
-      if (!args.length) return message.reply("❌ Please provide a song name or YouTube link.");
+onStart: async function ({ message, args }) { if (!args.length) return message.reply("❌ Please provide a song name.");
 
-      let videoUrl = args.join(" ");
-      let videoTitle = "Unknown Title";
+let videoUrl = args.join(" "); let videoTitle = "Unknown Title"; let isVideo = videoUrl.toLowerCase().endsWith("video"); if (isVideo) videoUrl = videoUrl.replace(/ video$/i, ""); try { message.reply("🔎 Searching for the song..."); const searchResults = await yts(videoUrl); if (!searchResults.videos.length) return message.reply("⚠️ No results found."); const video = searchResults.videos[0]; videoUrl = video.url; videoTitle = video.title; const thumbnail = video.thumbnail; console.log(`✅ Fetching ${isVideo ? "MP4" : "MP3"} for: ${videoTitle} (${videoUrl})`); const apiUrl = `https://nobita-music-8h2y.onrender.com/download?url=${videoUrl}&type=${isVideo ? "video" : "audio"}`; const response = await axios.get(apiUrl); if (!response.data || !response.data.file_url) { console.log("❌ API response invalid:", response.data); return message.reply("❌ Failed to fetch the file. Try again later."); } const fileUrl = response.data.file_url; console.log(`✅ File URL received: ${fileUrl}`); await message.reply({ body: `🎵 *Title:* ${videoTitle}\n🔗 *YouTube Link:* ${videoUrl}`, attachment: await global.utils.getStreamFromURL(thumbnail) }); const filePath = path.join(__dirname, "cache", `${Date.now()}.${isVideo ? "mp4" : "mp3"}`); const fileStream = await global.utils.getStreamFromURL(fileUrl); if (!fileStream) { console.log("❌ Failed to get file stream."); return message.reply("❌ Could not download the file."); } const writer = fs.createWriteStream(filePath); fileStream.pipe(writer); writer.on("finish", async () => { await message.reply({ attachment: fs.createReadStream(filePath) }); setTimeout(() => { fs.unlink(filePath, (err) => { if (err) console.error("Error deleting file:", err); }); }, 10000); }); } catch (error) { console.error("🚨 Music Command Error:", error); return message.reply(`⚠️ Error: ${error.message}`); } 
 
-      // Agar input me YouTube link nahi hai to search karo
-      if (!videoUrl.includes("youtube.com") && !videoUrl.includes("youtu.be")) {
-        message.reply("🔎 Searching for the song...");
-        const searchResults = await yts(videoUrl);
-        if (!searchResults.videos.length) return message.reply("⚠️ No results found.");
-        
-        videoUrl = searchResults.videos[0].url;
-        videoTitle = searchResults.videos[0].title;
-      }
-
-      // Tumhari API se MP3 download link lo
-      const apiUrl = `https://nobita-music-8h2y.onrender.com/download?url=${videoUrl}&type=audio`;
-      const response = await axios.get(apiUrl);
-
-      if (!response.data || !response.data.file_url) {
-        return message.reply("❌ Failed to fetch the audio. Try again later.");
-      }
-
-      const audioUrl = response.data.file_url;
-
-      await message.reply({
-        body: `🎵 *Title:* ${videoTitle}\n🔗 *YouTube Link:* ${videoUrl}`,
-        attachment: await global.utils.getStreamFromURL(audioUrl, `${videoTitle}.mp3`)
-      });
-
-    } catch (error) {
-      console.error("Error in music command:", error);
-      message.reply("⚠️ An error occurred while processing your request.");
-    }
-  }
-};
+} };
