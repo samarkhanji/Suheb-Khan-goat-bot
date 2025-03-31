@@ -37,7 +37,7 @@ module.exports = {
       } else if (gender1 === "MALE" || gender1 === 1) {
         id2 = candidates.find(u => u.gender === "FEMALE" || u.gender === 2)?.id;
       }
-      
+
       if (!id2) id2 = candidates[Math.floor(Math.random() * candidates.length)]?.id;
       if (!id2) return api.sendMessage("No suitable match found.", event.threadID);
 
@@ -68,6 +68,14 @@ module.exports = {
       ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
       ctx.drawImage(baseAvt1, 80, 90, 265, 280);
       ctx.drawImage(baseAvt2, 690, 90, 265, 280);
+
+      // Add text on image
+      ctx.font = "40px Arial";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText(`${name1}`, 210, 400); // User 1 name
+      ctx.fillText(`${name2}`, 820, 400); // User 2 name
+      ctx.fillText(`❤️ ${lovePercentage}%`, 500, 450); // Love percentage
 
       let imageBuffer = canvas.toBuffer();
       fs.writeFileSync(pathImg, imageBuffer);
