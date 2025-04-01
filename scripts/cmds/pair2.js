@@ -1,3 +1,4 @@
+const { GoatWrapper } = require('fca-liane-utils');
 const { loadImage, createCanvas } = require("canvas");
 const axios = require("axios");
 const fs = require("fs-extra");
@@ -7,95 +8,95 @@ module.exports = {
     name: "pair2",
     author: "xemon",
     role: 0,
-    shortDescription: "Pairing system",
-    longDescription: "Randomly pairs a user with another based on gender.",
+    shortDescription: "Pair two people",
+    longDescription: "Randomly pairs two users based on gender",
     category: "love",
     guide: "{pn}"
   },
 
   onStart: async function ({ api, event, usersData }) {
-    try {
-      let pathImg = __dirname + "/tmp/background.png";
-      let pathAvt1 = __dirname + "/tmp/Avtmot.png";
-      let pathAvt2 = __dirname + "/tmp/Avthai.png";
+    let pathImg = __dirname + "/cache/background.png";
+    let pathAvt1 = __dirname + "/cache/Avtmot.png";
+    let pathAvt2 = __dirname + "/cache/Avthai.png";
 
-      let id1 = event.senderID;
-      let userData1 = await usersData.get(id1);
-      let name1 = userData1 ? userData1.name : "Unknown";
+    var id1 = event.senderID;
+    var name1 = (await usersData.get(id1))?.name || "User 1";
 
-      let threadInfo = await api.getThreadInfo(event.threadID);
-      let allUsers = threadInfo.userInfo;
-      let gender1 = allUsers.find(u => u.id == id1)?.gender || "UNKNOWN";
-
-      let botID = api.getCurrentUserID();
-      let candidates = allUsers.filter(u => u.id !== id1 && u.id !== botID);
-
-      // Gender-based pairing
-      let id2;
-      if (gender1 === "FEMALE" || gender1 === 2) {
-        id2 = candidates.find(u => u.gender === "MALE" || u.gender === 1)?.id;
-      } else if (gender1 === "MALE" || gender1 === 1) {
-        id2 = candidates.find(u => u.gender === "FEMALE" || u.gender === 2)?.id;
+    let ThreadInfo = await api.getThreadInfo(event.threadID);
+    let all = ThreadInfo.userInfo;
+    let gender1 = "OTHER";
+    
+    for (let user of all) {
+      if (user.id == id1) {
+        gender1 = user.gender === 1 ? "FEMALE" : user.gender === 2 ? "MALE" : "OTHER";
       }
-
-      if (!id2) id2 = candidates[Math.floor(Math.random() * candidates.length)]?.id;
-      if (!id2) return api.sendMessage("No suitable match found.", event.threadID);
-
-      let userData2 = await usersData.get(id2);
-      let name2 = userData2 ? userData2.name : "Unknown";
-
-      let lovePercentage = Math.floor(Math.random() * 101);
-      let backgroundURL = "https://i.imgur.com/JhUIicn.jpeg";
-
-      // Download images
-      const downloadImage = async (url, path) => {
-        let imgData = (await axios.get(url, { responseType: "arraybuffer" })).data;
-        fs.writeFileSync(path, imgData);
-      };
-
-      await downloadImage(`https://graph.facebook.com/${id1}/picture?width=720&height=720`, pathAvt1);
-      await downloadImage(`https://graph.facebook.com/${id2}/picture?width=720&height=720`, pathAvt2);
-      await downloadImage(backgroundURL, pathImg);
-
-      // Create final image
-      let baseImage = await loadImage(pathImg);
-      let baseAvt1 = await loadImage(pathAvt1);
-      let baseAvt2 = await loadImage(pathAvt2);
-
-      let canvas = createCanvas(baseImage.width, baseImage.height);
-      let ctx = canvas.getContext("2d");
-
-      ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(baseAvt1, 80, 90, 265, 280);
-      ctx.drawImage(baseAvt2, 690, 90, 265, 280);
-
-      // Add text on image
-      ctx.font = "40px Arial";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.fillText(`${name1}`, 210, 400); // User 1 name
-      ctx.fillText(`${name2}`, 820, 400); // User 2 name
-      ctx.fillText(`❤️ ${lovePercentage}%`, 500, 450); // Love percentage
-
-      let imageBuffer = canvas.toBuffer();
-      fs.writeFileSync(pathImg, imageBuffer);
-
-      fs.removeSync(pathAvt1);
-      fs.removeSync(pathAvt2);
-
-      return api.sendMessage(
-        {
-          body: `💞Successful pairing!\n💌Wish you two hundred years of happiness.\nMay you both always be happy🙂\n👫 ${name1} + ${name2}\n❤️ Love Percentage: ${lovePercentage}%`,
-          mentions: [{ tag: name2, id: id2 }],
-          attachment: fs.createReadStream(pathImg),
-        },
-        event.threadID,
-        () => fs.unlinkSync(pathImg),
-        event.messageID
-      );
-    } catch (error) {
-      console.error(error);
-      return api.sendMessage("An error occurred while pairing.", event.threadID);
     }
-  }
+
+    const botID = api.getCurrentUserID();
+    let candidates = [];
+
+    if (gender1 === "FEMALE") {
+      candidates = all.filter(u => u.gender === 2 && u.id !== id1 && u.id !== botID).map(u => u.id);
+    } else if (gender1 === "MALE") {
+      candidates = all.filter(u => u.gender === 1 && u.id !== id1 && u.id !== botID).map(u => u.id);
+    } else {
+      candidates = all.filter(u => u.id !== id1 && u.id !== botID).map(u => u.id);
+    }
+
+    if (candidates.length === 0) {
+      return api.sendMessage("⚠️ No suitable match found!", event.threadID);
+    }
+
+    let id2 = candidates[Math.floor(Math.random() * candidates.length)];
+    let name2 = (await usersData.get(id2))?.name || "User 2";
+
+    let matchPercent = Math.floor(Math.random() * 100) + 1;
+    let backgroundImages = [
+      "https://i.imgur.com/JhUIicn.jpeg"
+    ];
+    let backgroundURL = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+
+    let userInfo1 = await api.getUserInfo(id1);
+    let userInfo2 = await api.getUserInfo(id2);
+    let avatarURL1 = userInfo1[id1]?.thumbSrc || "";
+    let avatarURL2 = userInfo2[id2]?.thumbSrc || "";
+
+    let getAvtmot = (await axios.get(avatarURL1, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(pathAvt1, Buffer.from(getAvtmot, "utf-8"));
+
+    let getAvthai = (await axios.get(avatarURL2, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(pathAvt2, Buffer.from(getAvthai, "utf-8"));
+
+    let getBackground = (await axios.get(backgroundURL, { responseType: "arraybuffer" })).data;
+    fs.writeFileSync(pathImg, Buffer.from(getBackground, "utf-8"));
+
+    let baseImage = await loadImage(pathImg);
+    let baseAvt1 = await loadImage(pathAvt1);
+    let baseAvt2 = await loadImage(pathAvt2);
+    let canvas = createCanvas(baseImage.width, baseImage.height);
+    let ctx = canvas.getContext("2d");
+
+    ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(baseAvt1, 80, 90, 265, 280);
+    ctx.drawImage(baseAvt2, 690, 90, 265, 280);
+
+    const imageBuffer = canvas.toBuffer();
+    fs.writeFileSync(pathImg, imageBuffer);
+    fs.removeSync(pathAvt1);
+    fs.removeSync(pathAvt2);
+
+    return api.sendMessage(
+      {
+        body: `💞Successful pairing!\n💌Wish you two hundred years of happiness. 🥰\nMay you both always be happy🙂\n👫 ${name1} + ${name2}\n❤️ Match Percentage: ${matchPercent}%`,
+        mentions: [{ tag: name2, id: id2 }],
+        attachment: fs.createReadStream(pathImg),
+      },
+      event.threadID,
+      () => fs.unlinkSync(pathImg),
+      event.messageID
+    );
+  },
 };
+
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
