@@ -25,10 +25,10 @@ module.exports = {
 			session2: "noon",
 			session3: "afternoon",
 			session4: "evening",
-			leaveType1: "[⚜️] 👉🏻👉🏻🙂👈🏻👈🏻▬▬▬▬ KO Bhaga diya .... {userName} [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥...Good",
-			leaveType2: "[⚜️] 👉🏻👉🏻🙂👈🏻👈🏻▬▬▬▬ KO Bhaga diya .... {userName} [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥...Good",
+			leaveType1: "[⚜️] 👉🏻👉🏻 {userName}👈🏻👈🏻▬▬▬▬ KO Bhaga diya ....  [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥...Good",
+			leaveType2: "[⚜️] 👉🏻👉🏻 {userName}👈🏻👈🏻▬▬▬▬ KO Bhaga diya ....  [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥...Good",
 			defaultLeaveMessage: "{userName} {type} Group se",
-			adminRemoveMessage: "😈 {adminName} ne {userName} Bechare Ko[⚜️] 👉🏻👉🏻🙂👈🏻👈🏻▬▬▬▬ KO Bhaga Diya Group Se .... {type} [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥"
+			adminRemoveMessage: "😈 {adminName} ne {userName} Bechare Ko[⚜️] 👉🏻👉🏻🙂👈🏻👈🏻▬▬▬▬ Bhaga Diya Group Se .... {type} [⚜️]\n😒😒\n🌺🌸🌺 🙏🏻 🙂●▬▬▬▬๑۩۩BEHTI HAWA SA THAA WO 😥 uDTI PATANG✨✨ SAA THAA WOO ♥ KAHA GAYA USE DHOONDHO🤔🤔🤔●▬▬▬▬๑۩ 🙏🏻💐<3😊💔\n\n[❤️‍🔥] 🖤🖤😥😥"
 		}
 	},
 
