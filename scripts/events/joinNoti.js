@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   config: {
     name: "joinNoti",
-    version: "2.2",
+    version: "2.3",
     author: "NTKhang (Modified by You)",
     category: "events"
   },
@@ -18,29 +18,22 @@ module.exports = {
     const prefix = global.utils.getPrefix(threadID);
     const dataAddedParticipants = event.logMessageData.addedParticipants;
 
-    // If bot is added
-    if (dataAddedParticipants.some(item => item.userFbId == api.getCurrentUserID())) {
-      if (nickNameBot) api.changeNickname(nickNameBot, threadID, api.getCurrentUserID());
-      return message.send(`Thank you for inviting me!\nBot prefix: ${prefix}\nUse ${prefix}help to see commands.`);
-    }
-
     const threadData = await threadsData.get(threadID);
     if (threadData.settings.sendWelcomeMessage === false) return;
 
-    // Get group name with error handling
-    let groupName = "this group";
-    try {
-      const threadInfo = await api.getThreadInfo(threadID);
-      if (threadInfo?.name) groupName = threadInfo.name;
-    } catch (err) {
-      console.error("Error fetching thread info:", err);
-    }
+    const threadInfo = await api.getThreadInfo(threadID).catch(() => ({}));
+    const groupName = threadInfo?.name || "this group";
 
-    // Get new member names
-    const newMembers = dataAddedParticipants.map(user => user.fullName).join(", ");
+    const form = {};
 
-    // Welcome message
-    const welcomeMessage = `✨ ★¸.•☆•.¸★ 🅆🄴🄻🄲🄾🄼🄴 🄷🄾 🄶🄰🅈🄰 🄰🄰🄿🄺🄰 ★⡀. *${newMembers}* Injoy Karo😬 *${groupName}* ✨
+    if (dataAddedParticipants.some(item => item.userFbId == api.getCurrentUserID())) {
+      // Bot add hua hai
+      if (nickNameBot) api.changeNickname(nickNameBot, threadID, api.getCurrentUserID());
+      form.body = `Thank you for inviting me!\nBot prefix: ${prefix}\nUse ${prefix}help to see commands.`;
+    } else {
+      // Normal user add hua
+      const newMembers = dataAddedParticipants.map(user => user.fullName).join(", ");
+      form.body = `✨ ★¸.•☆•.¸★ 🅆🄴🄻🄲🄾🄼🄴 🄷🄾 🄶🄰🅈🄰 🄰🄰🄿🄺🄰 ★⡀. *${newMembers}* Injoy Karo😬 *${groupName}* ✨
 
 💝🥀𝐎𝐖𝐍𝐄𝐑:- ☞💕͢͡⃟៚̗̗̗̗̗̗̀̀̀̀̀𝐑𝐚𝐣🙃💔☜ 
 
@@ -58,14 +51,13 @@ module.exports = {
 
 ┏━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┓🌸✦✧✧✧✧✰🍒R⃣A⃣J⃣🌿✰✧✧✧✧✦🌸  
 ┗━🕊️━━°❀•°:🎀🧸💙🧸🎀:°•❀°━━💞━┛`;
+    }
 
-    const form = { body: welcomeMessage };
-
-    // Attach a random video/gif from joinGif folder
+    // Video/gif attach karna
     const gifFolder = path.join(__dirname, "cache/joinGif/randomgif");
-    const files = fs.existsSync(gifFolder)
-      ? fs.readdirSync(gifFolder).filter(file => file.endsWith(".mp4") || file.endsWith(".gif"))
-      : [];
+    const files = fs.readdirSync(gifFolder).filter(file =>
+      [".mp4", ".gif"].includes(path.extname(file).toLowerCase())
+    );
 
     if (files.length > 0) {
       const randomFile = files[Math.floor(Math.random() * files.length)];
