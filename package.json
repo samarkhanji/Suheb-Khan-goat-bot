@@ -54,8 +54,6 @@
     "tinyurl": "^1.1.7",
     "totp-generator": "^0.0.13",
     "websocket-stream": "^5.5.2",
-    
-    // Newly added
     "ytdl-core": "^4.11.1"
   }
 }
