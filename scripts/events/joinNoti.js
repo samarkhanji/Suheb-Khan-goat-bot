@@ -18,6 +18,7 @@ module.exports = {
     const prefix = global.utils.getPrefix(threadID);
     const dataAddedParticipants = event.logMessageData.addedParticipants;
 
+    // If bot is added
     if (dataAddedParticipants.some(item => item.userFbId == api.getCurrentUserID())) {
       if (nickNameBot) api.changeNickname(nickNameBot, threadID, api.getCurrentUserID());
       return message.send(`Thank you for inviting me!\nBot prefix: ${prefix}\nUse ${prefix}help to see commands.`);
@@ -26,19 +27,19 @@ module.exports = {
     const threadData = await threadsData.get(threadID);
     if (threadData.settings.sendWelcomeMessage === false) return;
 
-    // **Get Group Name**
-    let threadInfo;
+    // Get group name with error handling
+    let groupName = "this group";
     try {
-      threadInfo = await api.getThreadInfo(threadID);
+      const threadInfo = await api.getThreadInfo(threadID);
+      if (threadInfo?.name) groupName = threadInfo.name;
     } catch (err) {
       console.error("Error fetching thread info:", err);
     }
-    const groupName = threadInfo?.name || "this group";
 
-    // **Get New Member Name**
+    // Get new member names
     const newMembers = dataAddedParticipants.map(user => user.fullName).join(", ");
 
-    // **Generate Welcome Message**
+    // Welcome message
     const welcomeMessage = `✨ ★¸.•☆•.¸★ 🅆🄴🄻🄲🄾🄼🄴 🄷🄾 🄶🄰🅈🄰 🄰🄰🄿🄺🄰 ★⡀. *${newMembers}* Injoy Karo😬 *${groupName}* ✨
 
 💝🥀𝐎𝐖𝐍𝐄𝐑:- ☞💕͢͡⃟៚̗̗̗̗̗̗̀̀̀̀̀𝐑𝐚𝐣🙃💔☜ 
@@ -60,9 +61,11 @@ module.exports = {
 
     const form = { body: welcomeMessage };
 
-    // **Folder se random video lena**
+    // Attach a random video/gif from joinGif folder
     const gifFolder = path.join(__dirname, "cache/joinGif/randomgif");
-    const files = fs.readdirSync(gifFolder).filter(file => file.endsWith(".mp4") || file.endsWith(".gif"));
+    const files = fs.existsSync(gifFolder)
+      ? fs.readdirSync(gifFolder).filter(file => file.endsWith(".mp4") || file.endsWith(".gif"))
+      : [];
 
     if (files.length > 0) {
       const randomFile = files[Math.floor(Math.random() * files.length)];
