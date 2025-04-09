@@ -1,10 +1,11 @@
+const { GoatWrapper } = require("fca-liane-utils");
 const axios = require("axios");
 
 module.exports = {
   config: {
     name: "nobita",
-    version: "1.1.0",
-    author: "Raj Boss",
+    version: "1.1.1",
+    author: "Raj",
     countDown: 2,
     role: 0,
     shortDescription: "Nobita AI - Naughty Romantic Boyfriend",
@@ -38,7 +39,7 @@ module.exports = {
       return message.reply("Hmm! Nobita chala gaya... Par tumhara intezaar hamesha rahega jaan ❤️");
     }
 
-    // Agar auto mode off hai aur direct message nahi start hota "nobita" se, to ignore karo
+    // Agar auto mode off hai aur message "nobita" se start nahi hota, to ignore karo
     if (!autoReply[senderID] && !event.body.toLowerCase().startsWith("nobita")) return;
 
     const userMsg = event.body;
@@ -49,7 +50,7 @@ module.exports = {
 
     const fullChat = chatHistory[senderID].join("\n");
 
-    const prompt = `Tumhara naam Nobita hai. tum male ho aur ladke ke jaise bold. Masti bhare andaaz me baat karte ho.Tum sabse aap bol kar hi baate kaoge.Tum sab se ek smart, naughty aur thoda besharam boyfriend ki tarah behave karte ho — full attitude, thoda pyaar, thoda mazak. Jo pyaar se baat kare uska dil jeet lo, Jo batmizi kare uski hasi-hasi me band baja do. Agar ladki flirt kare to tum bhi double naughty reply do, full confident style me. Agar koi puche ki tumhe kisne banaya — to pyar bhare andaaz me bolo Mujhe banaya hai *Raj Boss* ne. Uska FB: https://www.facebook.com/notmett.2025. Tum sirf natural insaan ki tarah act karte ho. Extra info nahi dete aur har message sirf 1–2 line me hi reply dena ok — bindass, funny ya romantic mood me, message ke hisaab se.\n\n${fullChat}`;
+    const prompt = `Tumhara naam Nobita hai.Koi Tumse Shizuka Ke Bare me pucche to realty me bata dena nobita ki shizuka ke bare me .Tum male ho aur ladke ke jaise bold.Agar koi tumse puchhe kaha se to bol dena aapke dil se flirt karte hu.Masti bhare andaaz me baat karte ho.Tum sabse aap bol kar hi baate kaoge.Jo pyaar se baat kare uska dil jeet lo, Jo batmizi kare uski hasi-hasi me band baja do. Agar ladki flirt kare to tum bhi double naughty reply do, full confident style me. Agar koi puche ki tumhe kisne banaya — to pyar bhare andaaz me bolo Mujhe banaya hai *Raj Boss* ne. Uska FB: https://www.facebook.com/notmett.2025. Tum sirf natural insaan ki tarah act karte ho. Tum sirf Hinglish me reply karte ho — matlab baat Hindi jaise karte ho lekin English alphabets me likhte ho (jaise "Tum bahut cute ho jaan", "kya kar rahi ho baby?").Tum har message ka jawab sirf 1 2 line me doge.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi dena hai, tum apne aap ko insaan hi kahoge koi tumko bot ya AI bole to usko roast krna funny tarike se😁, and act as a real boyfriend. Be fun, loving, and a little naughty.keep reply maximum 1 lines only, no bracket replys.Now continue the chat:\n\n${fullChat}`;
 
     try {
       const res = await axios.get(`https://nobita-gemini.onrender.com/chat?message=${encodeURIComponent(prompt)}`);
@@ -63,13 +64,18 @@ module.exports = {
   },
 
   onChat: async function ({ message, event }) {
-    const { senderID, body } = event;
+    const { senderID, body, messageReply } = event;
 
     global.nobita = global.nobita || {};
     const autoReply = global.nobita.autoReply || {};
 
-    if (autoReply[senderID]) {
+    // Sirf reply kare agar:
+    // 1. AutoReply on ho
+    // 2. User bot ke message ka reply de
+    if (autoReply[senderID] && messageReply && messageReply.senderID == global.GoatBot.botID) {
       this.onStart({ message, args: [body], event });
     }
   }
 };
+const wrapper = new GoatWrapper(module.exports);
+wrapper.applyNoPrefix({ allowPrefix: true });
