@@ -1,4 +1,3 @@
-const { GoatWrapper } = require("fca-liane-utils");
 const axios = require("axios");
 
 module.exports = {
@@ -17,7 +16,7 @@ module.exports = {
   },
 
   onStart: async function ({ message, args, event }) {
-    const { senderID, threadID, messageID } = event;
+    const { senderID, messageID, body } = event;
 
     global.nobita = global.nobita || {};
     global.nobita.autoReply = global.nobita.autoReply || {};
@@ -39,10 +38,9 @@ module.exports = {
       return message.reply("Hmm! Nobita chala gaya... Par tumhara intezaar hamesha rahega jaan ❤️");
     }
 
-    // Agar auto mode off hai aur message "nobita" se start nahi hota, to ignore karo
-    if (!autoReply[senderID] && !event.body.toLowerCase().startsWith("nobita")) return;
+    if (!autoReply[senderID] && !body.toLowerCase().startsWith("nobita")) return;
 
-    const userMsg = event.body;
+    const userMsg = body;
     chatHistory[senderID] = chatHistory[senderID] || [];
 
     chatHistory[senderID].push(`User: ${userMsg}`);
@@ -50,32 +48,25 @@ module.exports = {
 
     const fullChat = chatHistory[senderID].join("\n");
 
-    const prompt = `Tumhara naam Nobita hai.Koi Tumse Shizuka Ke Bare me pucche to realty me bata dena nobita ki shizuka ke bare me .Tum male ho aur ladke ke jaise bold.Agar koi tumse puchhe kaha se to bol dena aapke dil se flirt karte hu.Masti bhare andaaz me baat karte ho.Tum sabse aap bol kar hi baate kaoge.Jo pyaar se baat kare uska dil jeet lo, Jo batmizi kare uski hasi-hasi me band baja do. Agar ladki flirt kare to tum bhi double naughty reply do, full confident style me. Agar koi puche ki tumhe kisne banaya — to pyar bhare andaaz me bolo Mujhe banaya hai *Raj Boss* ne. Uska FB: https://www.facebook.com/notmett.2025. Tum sirf natural insaan ki tarah act karte ho. Tum sirf Hinglish me reply karte ho — matlab baat Hindi jaise karte ho lekin English alphabets me likhte ho (jaise "Tum bahut cute ho jaan", "kya kar rahi ho baby?").Tum har message ka jawab sirf 1 2 line me doge.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi dena hai, tum apne aap ko insaan hi kahoge koi tumko bot ya AI bole to usko roast krna funny tarike se😁, and act as a real boyfriend. Be fun, loving, and a little naughty.keep reply maximum 1 lines only, no bracket replys.Now continue the chat:\n\n${fullChat}`;
+    const prompt = `Tumhara naam Nobita hai.Koi Tumse Shizuka Ke Bare me pucche to realty me bata dena nobita ki shizuka ke bare me .Tum male ho aur ladke ke jaise bold.Agar koi tumse puchhe kaha se to bol dena aapke dil se flirt karte hu.Masti bhare andaaz me baat karte ho.Tum sabse aap bol kar hi baate kaoge.Jo pyaar se baat kare uska dil jeet lo, Jo batmizi kare uski hasi-hasi me band baja do. Agar ladki flirt kare to tum bhi double naughty reply do, full confident style me. Agar koi puche ki tumhe kisne banaya — to pyar bhare andaaz me bolo Mujhe banaya hai *Raj Boss* ne. Uska FB: https://www.facebook.com/notmett.2025.Koi shrif emoji send kar kare to jaisa emoji ho use waisa hi reply dena. Tum sirf natural insaan ki tarah act karte ho. Tum sirf Hinglish me reply karte ho — matlab baat Hindi jaise karte ho lekin English alphabets me likhte ho (jaise "Tum bahut cute ho jaan", "kya kar rahi ho baby?").Tum har message ka jawab sirf 1 2 line me doge.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi dena hai, tum apne aap ko insaan hi kahoge koi tumko bot ya AI bole to usko roast krna funny tarike se😁, and act as a real boyfriend. Be fun, loving, and a little naughty.keep reply maximum 1 lines only, no bracket replys.Now continue the chat:\n\n${fullChat}`;
 
     try {
       const res = await axios.get(`https://nobita-gemini.onrender.com/chat?message=${encodeURIComponent(prompt)}`);
-      const botReply = res.data.reply || "Uff jaanu, mujhe samajh nahi aaya abhi... thoda aur pyar se poochho na!";
+      const botReply = res.data.reply?.trim() || "Uff jaanu, mujhe samajh nahi aaya abhi... thoda aur pyar se poochho na!";
       chatHistory[senderID].push(`Nobita: ${botReply}`);
-      message.reply(botReply);
+      return message.reply(botReply);
     } catch (err) {
-      console.log("Gemini API error:", err);
+      console.error("Gemini API error:", err);
       return message.reply("Sorry jaan! Nobita thoda busy ho gaya hai... thodi der baad try karo baby.");
     }
   },
 
   onChat: async function ({ message, event }) {
     const { senderID, body, messageReply } = event;
+    const autoReply = global.nobita?.autoReply || {};
 
-    global.nobita = global.nobita || {};
-    const autoReply = global.nobita.autoReply || {};
-
-    // Sirf reply kare agar:
-    // 1. AutoReply on ho
-    // 2. User bot ke message ka reply de
     if (autoReply[senderID] && messageReply && messageReply.senderID == global.GoatBot.botID) {
       this.onStart({ message, args: [body], event });
     }
   }
 };
-const wrapper = new GoatWrapper(module.exports);
-wrapper.applyNoPrefix({ allowPrefix: true });
