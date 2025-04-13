@@ -37,7 +37,7 @@ module.exports = {
       console.log(`✅ Fetching MP4 for: ${videoTitle} (${videoUrl})`);
 
       // API request
-      const apiUrl = `https://nobita-music-8h2y.onrender.com/download?url=${videoUrl}&type=video`;
+      const apiUrl = `https://nobita-music-0nwg.onrender.com/download?url=${videoUrl}&type=video`;
       const response = await axios.get(apiUrl);
 
       if (!response.data || !response.data.file_url) {
