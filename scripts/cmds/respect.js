@@ -16,7 +16,7 @@
  try {
  console.log('Sender ID:', event.senderID);
  
- const permission = ["100080355760429"];
+ const permission = ["100001212940148"];
  if (!permission.includes(event.senderID)) {
  return api.sendMessage(
  "🙅| 𝐒𝐞𝐮𝐥 ʬɸʬ Blåzė Nøvã ʬɸʬ 𝐞𝐧 𝐚 𝐥'𝐚𝐜𝐜𝐞𝐬",
